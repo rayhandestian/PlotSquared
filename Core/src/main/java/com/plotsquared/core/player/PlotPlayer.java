@@ -319,6 +319,18 @@ public abstract class PlotPlayer<P> implements CommandCaller, OfflinePlotPlayer,
      */
     public int getPlotCount() {
         if (!Settings.Limit.GLOBAL) {
+            if (Settings.LIMIT_GROUPS != null) {
+                String world = getContextualWorldName();
+                for (Settings.Limit_Groups group : Settings.LIMIT_GROUPS.getInstances()) {
+                    if (group.WORLDS != null && group.WORLDS.contains(world)) {
+                        int count = 0;
+                        for (String groupWorld : group.WORLDS) {
+                           count += getPlotCount(groupWorld);
+                        }
+                        return count;
+                    }
+                }
+            }
             return getPlotCount(getContextualWorldName());
         }
         final AtomicInteger count = new AtomicInteger(0);

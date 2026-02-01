@@ -52,6 +52,9 @@ public class Settings extends Config {
     public static ConfigBlock<Auto_Clear> AUTO_CLEAR = null;
     // A ConfigBlock is a section that can have multiple instances e.g. multiple expiry tasks
 
+    @Create
+    public static ConfigBlock<Limit_Groups> LIMIT_GROUPS = null;
+
     public static void save(File file) {
         save(file, Settings.class);
     }
@@ -214,6 +217,16 @@ public class Settings extends Config {
             public int DATA = 0;
 
         }
+
+    }
+
+
+    @Comment("A group of worlds that share a plot limit")
+    @BlockName("default")
+    public static final class Limit_Groups extends ConfigBlock {
+
+        @Comment("The worlds that share the limit")
+        public List<String> WORLDS = new ArrayList<>();
 
     }
 
