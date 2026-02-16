@@ -848,4 +848,14 @@ public class Settings extends Config {
 
     }
 
+    @Comment("Discord webhook settings")
+    public static final class Discord {
+        @Comment("The webhook URL to send messages to")
+        public static String WEBHOOK_URL = "";
+        @Comment("Whether or not to log admin plot deletions to Discord")
+        public static boolean LOG_ADMIN_DELETE = true;
+        @Comment("Whether or not to log admin plot clears to Discord")
+        public static boolean LOG_ADMIN_CLEAR = true;
+    }
+
 }

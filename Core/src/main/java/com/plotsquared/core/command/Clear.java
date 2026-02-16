@@ -19,6 +19,7 @@
 package com.plotsquared.core.command;
 
 import com.google.inject.Inject;
+import com.plotsquared.core.PlotSquared;
 import com.plotsquared.core.backup.BackupManager;
 import com.plotsquared.core.configuration.Settings;
 import com.plotsquared.core.configuration.caption.TranslatableCaption;
@@ -31,6 +32,7 @@ import com.plotsquared.core.plot.flag.PlotFlag;
 import com.plotsquared.core.plot.flag.implementations.AnalysisFlag;
 import com.plotsquared.core.plot.flag.implementations.DoneFlag;
 import com.plotsquared.core.queue.GlobalBlockQueue;
+import com.plotsquared.core.util.DiscordUtil;
 import com.plotsquared.core.util.EventDispatcher;
 import com.plotsquared.core.util.task.RunnableVal2;
 import com.plotsquared.core.util.task.RunnableVal3;
@@ -105,6 +107,24 @@ public class Clear extends Command {
                         }
                 ));
             }
+
+            if (Settings.Discord.LOG_ADMIN_CLEAR && !Settings.Discord.WEBHOOK_URL.isEmpty()) {
+                if (force || (!plot.isOwner(player.getUUID()) && player.hasPermission("plots.admin.command.clear"))) {
+                    final String ownerName = PlotSquared.platform().playerManager().resolveName(plot.getOwnerAbs()).toString();
+                    final String adminName = player.getName();
+                    final String plotId = plot.getId().toString();
+                    final String worldName = plot.getArea().getWorldName();
+                    final int x = plot.getBottomAbs().getX();
+                    final int z = plot.getBottomAbs().getZ();
+
+                    final String message = String.format(
+                            "**[Admin Action]** Admin **%s** cleared plot **%s** in **%s** (Owner: **%s**) at Coordinates: **%d, %d**",
+                            adminName, plotId, worldName, ownerName != null ? ownerName : "Unknown", x, z
+                    );
+                    DiscordUtil.sendWebhook(message);
+                }
+            }
+
             BackupManager.backup(player, plot, () -> {
                 final long start = System.currentTimeMillis();
                 boolean result = plot.getPlotModificationManager().clear(true, false, player, () -> TaskManager.runTask(() -> {

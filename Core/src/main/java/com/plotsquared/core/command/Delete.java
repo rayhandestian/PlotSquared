@@ -19,6 +19,7 @@
 package com.plotsquared.core.command;
 
 import com.google.inject.Inject;
+import com.plotsquared.core.PlotSquared;
 import com.plotsquared.core.configuration.Settings;
 import com.plotsquared.core.configuration.caption.TranslatableCaption;
 import com.plotsquared.core.events.Result;
@@ -28,6 +29,7 @@ import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
 import com.plotsquared.core.util.EconHandler;
+import com.plotsquared.core.util.DiscordUtil;
 import com.plotsquared.core.util.EventDispatcher;
 import com.plotsquared.core.util.PlotExpression;
 import com.plotsquared.core.util.task.TaskManager;
@@ -103,6 +105,24 @@ public class Delete extends SubCommand {
                         }
                 ));
             }
+
+            if (Settings.Discord.LOG_ADMIN_DELETE && !Settings.Discord.WEBHOOK_URL.isEmpty()) {
+                if (!plot.isOwner(player.getUUID()) && player.hasPermission(Permission.PERMISSION_ADMIN_COMMAND_DELETE)) {
+                    final String ownerName = PlotSquared.platform().playerManager().resolveName(plot.getOwnerAbs()).toString();
+                    final String adminName = player.getName();
+                    final String plotId = plot.getId().toString();
+                    final String worldName = plot.getWorldName();
+                    final int x = plot.getBottomAbs().getX();
+                    final int z = plot.getBottomAbs().getZ();
+
+                    final String message = String.format(
+                            "**[Admin Action]** Admin **%s** deleted plot **%s** in **%s** (Owner: **%s**) at Coordinates: **%d, %d**",
+                            adminName, plotId, worldName, ownerName != null ? ownerName : "Unknown", x, z
+                    );
+                    DiscordUtil.sendWebhook(message);
+                }
+            }
+
             boolean result = plot.getPlotModificationManager().deletePlot(player, () -> {
                 plot.removeRunning();
                 if (this.econHandler.isEnabled(plotArea)) {
