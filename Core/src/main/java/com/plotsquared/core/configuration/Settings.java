@@ -182,6 +182,12 @@ public class Settings extends Config {
 
         Enabled_Components.DATABASE_PURGER =
                 config.getBoolean("auto-purge", Enabled_Components.DATABASE_PURGER);
+
+        // Discord Webhook
+        Discord.WEBHOOK_URL = config.getString("discord.webhook-url", Discord.WEBHOOK_URL);
+        Discord.LOG_ADMIN_DELETE = config.getBoolean("discord.log-admin-delete", Discord.LOG_ADMIN_DELETE);
+        Discord.LOG_ADMIN_CLEAR = config.getBoolean("discord.log-admin-clear", Discord.LOG_ADMIN_CLEAR);
+
         return true;
     }
 
@@ -519,6 +525,19 @@ public class Settings extends Config {
     }
 
 
+    @Comment("Discord webhook settings")
+    public static final class Discord {
+
+        @Comment("The webhook URL to send messages to")
+        public static String WEBHOOK_URL = "";
+        @Comment("Whether or not to log admin plot deletions to Discord")
+        public static boolean LOG_ADMIN_DELETE = true;
+        @Comment("Whether or not to log admin plot clears to Discord")
+        public static boolean LOG_ADMIN_CLEAR = true;
+
+    }
+
+
     @Comment("Chat related settings")
     public static final class Chat {
 
@@ -848,14 +867,5 @@ public class Settings extends Config {
 
     }
 
-    @Comment("Discord webhook settings")
-    public static final class Discord {
-        @Comment("The webhook URL to send messages to")
-        public static String WEBHOOK_URL = "";
-        @Comment("Whether or not to log admin plot deletions to Discord")
-        public static boolean LOG_ADMIN_DELETE = true;
-        @Comment("Whether or not to log admin plot clears to Discord")
-        public static boolean LOG_ADMIN_CLEAR = true;
-    }
 
 }

@@ -20,6 +20,7 @@ package com.plotsquared.core.command;
 
 import com.google.inject.Inject;
 import com.plotsquared.core.PlotSquared;
+import com.plotsquared.core.location.Location;
 import com.plotsquared.core.backup.BackupManager;
 import com.plotsquared.core.configuration.Settings;
 import com.plotsquared.core.configuration.caption.TranslatableCaption;
@@ -27,6 +28,7 @@ import com.plotsquared.core.events.PlotFlagRemoveEvent;
 import com.plotsquared.core.events.Result;
 import com.plotsquared.core.events.TeleportCause;
 import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.player.ConsolePlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.flag.PlotFlag;
 import com.plotsquared.core.plot.flag.implementations.AnalysisFlag;
@@ -110,18 +112,20 @@ public class Clear extends Command {
 
             if (Settings.Discord.LOG_ADMIN_CLEAR && !Settings.Discord.WEBHOOK_URL.isEmpty()) {
                 if (force || (!plot.isOwner(player.getUUID()) && player.hasPermission("plots.admin.command.clear"))) {
-                    final String ownerName = PlotSquared.platform().playerManager().resolveName(plot.getOwnerAbs()).toString();
                     final String adminName = player.getName();
                     final String plotId = plot.getId().toString();
                     final String worldName = plot.getArea().getWorldName();
-                    final int x = plot.getBottomAbs().getX();
-                    final int z = plot.getBottomAbs().getZ();
+                    final Location bottom = plot.getBottomAbs();
+                    final String coords = String.format("%d, %d", bottom.getX(), bottom.getZ());
 
-                    final String message = String.format(
-                            "**[Admin Action]** Admin **%s** cleared plot **%s** in **%s** (Owner: **%s**) at Coordinates: **%d, %d**",
-                            adminName, plotId, worldName, ownerName != null ? ownerName : "Unknown", x, z
-                    );
-                    DiscordUtil.sendWebhook(message);
+                    PlotSquared.platform().playerManager().getUsernameCaption(plot.getOwnerAbs()).thenAccept(ownerCaption -> {
+                        final String ownerName = ownerCaption.getComponent(ConsolePlayer.getConsole());
+                        final String message = String.format(
+                                "**[Admin Action]** Admin **%s** cleared plot **%s** in **%s** (Owner: **%s**) at Coordinates: **%s**",
+                                adminName, plotId, worldName, ownerName, coords
+                        );
+                        DiscordUtil.sendWebhook(message);
+                    });
                 }
             }
 
