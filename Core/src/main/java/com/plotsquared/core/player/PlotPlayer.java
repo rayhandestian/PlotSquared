@@ -75,6 +75,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
@@ -319,19 +320,7 @@ public abstract class PlotPlayer<P> implements CommandCaller, OfflinePlotPlayer,
      */
     public int getPlotCount() {
         if (!Settings.Limit.GLOBAL) {
-            if (Settings.LIMIT_GROUPS != null) {
-                String world = getContextualWorldName();
-                for (Settings.Limit_Groups group : Settings.LIMIT_GROUPS.getInstances()) {
-                    if (group.WORLDS != null && group.WORLDS.contains(world)) {
-                        int count = 0;
-                        for (String groupWorld : group.WORLDS) {
-                           count += getPlotCount(groupWorld);
-                        }
-                        return count;
-                    }
-                }
-            }
-            return getPlotCount(getContextualWorldName());
+            return getLimitPlotCount(getContextualWorldName());
         }
         final AtomicInteger count = new AtomicInteger(0);
         final UUID uuid = getUUID();
@@ -409,6 +398,38 @@ public abstract class PlotPlayer<P> implements CommandCaller, OfflinePlotPlayer,
             }
         }
         return count;
+    }
+
+    /**
+     * Get the number of plots this player owns that count towards the plot limit in the world:
+     * every world when the limit is global, otherwise every world in the same limit group.
+     *
+     * @param world the name of the plotworld to check.
+     * @return plot count
+     */
+    public int getLimitPlotCount(String world) {
+        if (Settings.Limit.GLOBAL) {
+            return getPlotCount();
+        }
+        int count = 0;
+        for (String limitWorld : getLimitWorlds(world)) {
+            count += getPlotCount(limitWorld);
+        }
+        return count;
+    }
+
+    /**
+     * {@return the worlds that share the plot limit with the world, including the world itself}
+     */
+    static List<String> getLimitWorlds(String world) {
+        if (Settings.LIMIT_GROUPS != null) {
+            for (Settings.Limit_Groups group : Settings.LIMIT_GROUPS.getInstances()) {
+                if (group.WORLDS != null && group.WORLDS.contains(world)) {
+                    return group.WORLDS;
+                }
+            }
+        }
+        return List.of(world);
     }
 
     public int getClusterCount(String world) {

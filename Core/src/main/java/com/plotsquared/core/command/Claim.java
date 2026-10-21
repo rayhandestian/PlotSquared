@@ -19,7 +19,6 @@
 package com.plotsquared.core.command;
 
 import com.google.inject.Inject;
-import com.plotsquared.core.configuration.Settings;
 import com.plotsquared.core.configuration.caption.TranslatableCaption;
 import com.plotsquared.core.database.DBFunc;
 import com.plotsquared.core.events.PlayerClaimPlotEvent;
@@ -86,9 +85,7 @@ public class Claim extends SubCommand {
             return true;
         }
         boolean force = event.getEventResult() == Result.FORCE;
-        int currentPlots = Settings.Limit.GLOBAL ?
-                player.getPlotCount() :
-                player.getPlotCount(plot.getWorldName());
+        int currentPlots = player.getLimitPlotCount(plot.getWorldName());
 
         final PlotArea area = plot.getArea();
 

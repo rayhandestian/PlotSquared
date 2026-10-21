@@ -20,7 +20,6 @@ package com.plotsquared.core.command;
 
 import com.google.inject.Inject;
 import com.plotsquared.core.PlotSquared;
-import com.plotsquared.core.configuration.Settings;
 import com.plotsquared.core.configuration.caption.TranslatableCaption;
 import com.plotsquared.core.events.PlayerBuyPlotEvent;
 import com.plotsquared.core.events.Result;
@@ -85,7 +84,7 @@ public class Buy extends Command {
         checkTrue(plot.hasOwner(), TranslatableCaption.of("info.plot_unowned"));
         checkTrue(!plot.isOwner(player.getUUID()), TranslatableCaption.of("economy.cannot_buy_own"));
         Set<Plot> plots = plot.getConnectedPlots();
-        int plotCount = Settings.Limit.GLOBAL ? player.getPlotCount() : player.getPlotCount(plot.getWorldName());
+        int plotCount = player.getLimitPlotCount(plot.getWorldName());
         checkTrue(
                 plotCount + plots.size() <= player.getAllowedPlots(),
                 TranslatableCaption.of("permission.cant_claim_more_plots"),

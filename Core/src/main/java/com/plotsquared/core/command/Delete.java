@@ -30,7 +30,6 @@ import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.player.ConsolePlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
-import java.util.concurrent.CompletableFuture;
 import com.plotsquared.core.util.EconHandler;
 import com.plotsquared.core.util.DiscordUtil;
 import com.plotsquared.core.util.EventDispatcher;
@@ -93,9 +92,7 @@ public class Delete extends SubCommand {
         }
         final PlotArea plotArea = plot.getArea();
         final java.util.Set<Plot> plots = plot.getConnectedPlots();
-        final int currentPlots = Settings.Limit.GLOBAL ?
-                player.getPlotCount() :
-                player.getPlotCount(plot.getWorldName());
+        final int currentPlots = player.getLimitPlotCount(plot.getWorldName());
         Runnable run = () -> {
             if (plot.getRunning() > 0) {
                 player.sendMessage(TranslatableCaption.of("errors.wait_for_timer"));

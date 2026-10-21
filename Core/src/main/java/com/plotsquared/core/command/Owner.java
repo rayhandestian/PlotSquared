@@ -20,7 +20,6 @@ package com.plotsquared.core.command;
 
 import com.google.inject.Inject;
 import com.plotsquared.core.PlotSquared;
-import com.plotsquared.core.configuration.Settings;
 import com.plotsquared.core.configuration.caption.TranslatableCaption;
 import com.plotsquared.core.events.PlotChangeOwnerEvent;
 import com.plotsquared.core.events.PlotUnlinkEvent;
@@ -156,9 +155,7 @@ public class Owner extends SetCommand {
                     return;
                 }
                 int size = plots.size();
-                int currentPlots = (Settings.Limit.GLOBAL ?
-                        other.getPlotCount() :
-                        other.getPlotCount(plot.getWorldName())) + size;
+                int currentPlots = other.getLimitPlotCount(plot.getWorldName()) + size;
                 try (final MetaDataAccess<Integer> metaDataAccess = player.accessPersistentMetaData(PlayerMetaDataKeys.PERSISTENT_GRANTED_PLOTS)) {
                     int grants;
                     if (currentPlots >= other.getAllowedPlots()) {

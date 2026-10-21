@@ -68,7 +68,7 @@ public class Continue extends SubCommand {
             return false;
         }
         int size = plot.getConnectedPlots().size();
-        int plotCount = Settings.Limit.GLOBAL ? player.getPlotCount() : player.getPlotCount(plot.getWorldName());
+        int plotCount = player.getLimitPlotCount(plot.getWorldName());
         if (!Settings.Done.COUNTS_TOWARDS_LIMIT && (player.getAllowedPlots() < plotCount + size)) {
             player.sendMessage(
                     TranslatableCaption.of("permission.cant_claim_more_plots"),

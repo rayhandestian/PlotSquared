@@ -97,12 +97,7 @@ public class Auto extends SubCommand {
         if (allowedPlots == null) {
             allowedPlots = player.getAllowedPlots();
         }
-        int currentPlots;
-        if (Settings.Limit.GLOBAL) {
-            currentPlots = player.getPlotCount();
-        } else {
-            currentPlots = player.getPlotCount(plotarea.getWorldName());
-        }
+        int currentPlots = player.getLimitPlotCount(plotarea.getWorldName());
         int diff = allowedPlots - currentPlots;
         if (diff - sizeX * sizeZ < 0) {
             try (final MetaDataAccess<Integer> metaDataAccess = player.accessPersistentMetaData(
@@ -299,9 +294,7 @@ public class Auto extends SubCommand {
             PlotExpression mergeCostExp = plotarea.getPrices().get("merge");
             int size = sizeX * sizeZ;
             double mergeCost = size <= 1 || mergeCostExp == null ? 0d : mergeCostExp.evaluate(size);
-            double cost = costExp.evaluate(Settings.Limit.GLOBAL ?
-                    player.getPlotCount() :
-                    player.getPlotCount(plotarea.getWorldName()));
+            double cost = costExp.evaluate(player.getLimitPlotCount(plotarea.getWorldName()));
             cost = size * cost + mergeCost;
             if (cost > 0d) {
                 if (!this.econHandler.isSupported()) {
